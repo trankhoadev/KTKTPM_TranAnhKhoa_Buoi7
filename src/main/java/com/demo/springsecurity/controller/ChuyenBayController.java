@@ -1,40 +1,71 @@
 package com.demo.springsecurity.controller;
 
 import com.demo.springsecurity.entity.ChuyenBay;
-import com.demo.springsecurity.service.ChuyenBayService;
+import com.demo.springsecurity.entity.Product;
+import com.demo.springsecurity.exception.ResourceNotFoundException;
+import com.demo.springsecurity.repository.ChuyenBayRepository;
+import com.demo.springsecurity.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/chuyen-bay")
+@CrossOrigin("*")
+@Controller
+@RequestMapping("/chuyen-bay")
 public class ChuyenBayController {
     @Autowired
-    ChuyenBayService chuyenBayService;
+    private ChuyenBayRepository chuyenBayRepository;
 
-    @GetMapping("/ga-di/{gaDi}")
-    public List<ChuyenBay> getChuyenBayByGaDi(@PathVariable(name = "gaDi") String gaDi) {
-        return chuyenBayService.findByGaDi(gaDi);
+    @GetMapping
+    public List<ChuyenBay> getAllChuyenBay(){
+        return chuyenBayRepository.findAll();
     }
 
-    @GetMapping("/ga-den/{gaDen}")
-    public List<ChuyenBay> getChuyenBayByGaDen(@PathVariable(name = "gaDen") String gaDen) {
-        return chuyenBayService.findByGaDen(gaDen);
+    // build create employee REST API
+    @PostMapping
+    public ChuyenBay createChuyenBay(@RequestBody ChuyenBay chuyenBay) {
+        return chuyenBayRepository.save(chuyenBay);
     }
 
-    @GetMapping("/do-dai/{lonHon}/{nhoHon}")
-    public List<ChuyenBay> getChuyenBayByDoDai(@PathVariable(name = "lonHon") int lonHon,
-                                               @PathVariable(name = "nhoHon") int nhoHon) {
-        return chuyenBayService.findByDoDai(lonHon, nhoHon);
+    // build get employee by id REST API
+    @GetMapping("{id}")
+    public ResponseEntity<ChuyenBay> getChuyenBay(@PathVariable  long id){
+        ChuyenBay product = chuyenBayRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ChuyenBay not exist with id:" + id));
+        return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/ga/{gaDi}/{gaDen}")
-    public List<ChuyenBay> getChuyenBayByGaDiGaDen(@PathVariable(name = "gaDi") String gaDi,
-                                                   @PathVariable(name = "gaDen") String gaDen) {
-        return chuyenBayService.findByGaDiGaDen(gaDi, gaDen);
+    // build update employee REST API
+    @PutMapping("{id}")
+    public ResponseEntity<ChuyenBay> updateChuyenBay(@PathVariable long id,@RequestBody ChuyenBay chuyenBay) {
+        ChuyenBay updateChuyenBay = chuyenBayRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("ChuyenBay not exist with id: " + id));
+
+
+        updateChuyenBay.setGaDen(chuyenBay.getGaDen());
+        updateChuyenBay.setGaDi(chuyenBay.getGaDi());
+        updateChuyenBay.setMaCb(chuyenBay.getMaCb());
+
+        chuyenBayRepository.save(updateChuyenBay);
+
+        return ResponseEntity.ok(updateChuyenBay);
     }
+
+    // build delete employee REST API
+    @DeleteMapping("{id}")
+    public ResponseEntity<HttpStatus> deleteChuyenBay(@PathVariable long id){
+
+        ChuyenBay product = chuyenBayRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not exist with id: " + id));
+
+        chuyenBayRepository.delete(product);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+    }
+
 }

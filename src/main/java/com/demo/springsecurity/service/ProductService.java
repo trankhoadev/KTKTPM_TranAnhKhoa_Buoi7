@@ -1,8 +1,6 @@
 package com.demo.springsecurity.service;
 
-import com.demo.springsecurity.entity.ChuyenBay;
 import com.demo.springsecurity.entity.Product;
-import com.demo.springsecurity.repository.ChuyenBayRepository;
 import com.demo.springsecurity.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,20 +10,20 @@ import java.util.List;
 
 @Service
 @Transactional
-public class ChuyenBayService {
+public class ProductService {
     @Autowired
-    private ChuyenBayRepository repo;
+    private ProductRepository repo;
 
-    public ChuyenBay get(long id) {
+    public Product get(long id) {
         return repo.findById(id).get();
     }
 
-    public List<ChuyenBay> getAll() {
+    public List<Product> getAll() {
         return repo.findAll();
     }
 
-    public void save(ChuyenBay chuyenBay) {
-        repo.save(chuyenBay);
+    public void save(Product product) {
+        repo.save(product);
     }
 
     public void delete(long id) {
